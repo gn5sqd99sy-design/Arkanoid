@@ -44,6 +44,22 @@ let blockLoaded = false;
 let score = 0;
 let gameWon = false;
 let gamePaused = false;
+let animationFrameId = null;
+
+function stopAnimationLoop() {
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+}
+
+function scheduleNextFrame() {
+  if (animationFrameId !== null || !ballLaunched || gamePaused || gameWon) return;
+  animationFrameId = requestAnimationFrame(() => {
+    animationFrameId = null;
+    moveBall();
+  });
+}
 const bricks = Array.from({ length: 3 }, () => Array(8).fill(true));
 
 let platformLoaded = false;
@@ -169,9 +185,9 @@ document.addEventListener("keydown", (event) => {
 document.addEventListener("keydown", (event) => {
   if (event.code === "Space") {
     event.preventDefault();
-    if (!ballLaunched) {
+    if (!ballLaunched && !gamePaused && !gameWon) {
       ballLaunched = true;
-      requestAnimationFrame(moveBall);
+      scheduleNextFrame();
     }
   }
 });
@@ -179,6 +195,9 @@ document.addEventListener("keydown", (event) => {
 // KAN-15: restart game
 function restartGame() {
   if (!gameWon) return;
+
+  stopAnimationLoop();
+  gamePaused = false;
 
   gameWon = false;
   ballLaunched = false;
@@ -206,7 +225,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 function moveBall() {
-  if (!ballLaunched || gamePaused) return;
+  if (!ballLaunched || gamePaused || gameWon) return;
 
   ballX += ballVelocityX;
   ballY += ballVelocityY;
@@ -299,13 +318,14 @@ function moveBall() {
     return;
   }
 
-  requestAnimationFrame(moveBall);
+  scheduleNextFrame();
 }
 
 // KAN-15: test victory
 document.addEventListener("keydown", (event) => {
   if (event.code === "KeyV") {
     event.preventDefault();
+    stopAnimationLoop();
     ballLaunched = false;
     bricks.forEach(row => row.fill(false));
     score = 240;
@@ -320,9 +340,10 @@ document.addEventListener("keydown", (event) => {
 
   event.preventDefault();
   gamePaused = !gamePaused;
+  if (gamePaused) stopAnimationLoop();
   drawObjects();
 
   if (!gamePaused && ballLaunched) {
-    requestAnimationFrame(moveBall);
+    scheduleNextFrame();
   }
 });
