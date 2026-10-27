@@ -21,6 +21,12 @@ const platformHeight = 20;
 const ballSize = 20;
 const platformY = canvas.height - platformHeight - 20;
 let platformX = (canvas.width - platformWidth) / 2;
+let ballLaunched = false;
+let ballX = platformX + platformWidth / 2 - ballSize / 2;
+let ballY = platformY - ballSize;
+const ballSpeedX = 2;
+const ballSpeedY = -4;
+
 const platformSpeed = 8;
 
 const ball = new Image();
@@ -59,7 +65,13 @@ function drawObjects() {
 
 
   context.drawImage(platform, platformX, platformY, platformWidth, platformHeight);
-  context.drawImage(ball, platformX + platformWidth / 2 - ballSize / 2, platformY - ballSize, ballSize, ballSize);
+  
+  if (!ballLaunched) {
+    ballX = platformX + platformWidth / 2 - ballSize / 2;
+    ballY = platformY - ballSize;
+  }
+  context.drawImage(ball, ballX, ballY, ballSize, ballSize);
+
 }
 
 platform.onload = () => {
@@ -100,3 +112,31 @@ document.addEventListener("keydown", (event) => {
   platformX = Math.max(0, Math.min(canvas.width - platformWidth, platformX));
   drawObjects();
 });
+
+
+document.addEventListener("keydown", (event) => {
+  if (event.code === "Space") {
+    event.preventDefault();
+    if (!ballLaunched) {
+      ballLaunched = true;
+      requestAnimationFrame(moveBall);
+    }
+  }
+});
+
+function moveBall() {
+  if (!ballLaunched) return;
+
+  ballX += ballSpeedX;
+  ballY += ballSpeedY;
+
+  drawObjects();
+
+  if (ballY + ballSize < 0) {
+    ballLaunched = false;
+    drawObjects();
+    return;
+  }
+
+  requestAnimationFrame(moveBall);
+}
