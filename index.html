@@ -1,0 +1,31 @@
+<html>
+<head>
+<title>Arkanoid</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+	box-sizing: border-box;
+}
+body {
+	display: grid;
+	min-height: 100vh;
+	margin: 0;
+	place-items: center;
+	background: #211229;
+}
+canvas {
+	display: block;
+	width: min(100vw, 640px);
+	height: auto;
+	aspect-ratio: 16 / 9;
+}
+</style>
+</head>
+<body>
+<canvas id="mycanvas" width="640" height="360" aria-label="Arkanoidi mänguväli">
+	Sinu brauser ei toeta HTML5 canvas-elementi.
+</canvas>
+<script src="game.js" type="text/javascript"></script>
+</body>
+</html>
