@@ -5,7 +5,7 @@ const context = canvas.getContext("2d");
 const background = new Image();
 
 background.addEventListener("load", () => {
-  context.drawImage(background, 0, 0, canvas.width, canvas.height);
+  drawObjects();
 });
 
 background.addEventListener("error", () => {
@@ -15,6 +15,14 @@ background.addEventListener("error", () => {
 background.src = "img/background.png";
 
 const platform = new Image();
+
+const platformWidth = 110;
+const platformHeight = 20;
+const ballSize = 20;
+const platformY = canvas.height - platformHeight - 20;
+let platformX = (canvas.width - platformWidth) / 2;
+const platformSpeed = 8;
+
 const ball = new Image();
 const block = new Image();
 let blockLoaded = false;
@@ -23,6 +31,12 @@ let platformLoaded = false;
 let ballLoaded = false;
 
 function drawObjects() {
+  if (background.complete && background.naturalWidth) {
+    context.drawImage(background, 0, 0, canvas.width, canvas.height);
+  } else {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
   if (blockLoaded) {
     const columns = 8;
     const rows = 3;
@@ -43,15 +57,9 @@ function drawObjects() {
 
   if (!platformLoaded || !ballLoaded) return;
 
-  const platformWidth = 110;
-  const platformHeight = 20;
-  const ballSize = 20;
-
-  const platformX = (canvas.width - platformWidth) / 2;
-  const platformY = canvas.height - platformHeight - 20;
 
   context.drawImage(platform, platformX, platformY, platformWidth, platformHeight);
-  context.drawImage(ball, canvas.width / 2 - ballSize / 2, platformY - ballSize, ballSize, ballSize);
+  context.drawImage(ball, platformX + platformWidth / 2 - ballSize / 2, platformY - ballSize, ballSize, ballSize);
 }
 
 platform.onload = () => {
@@ -76,3 +84,19 @@ block.onload = () => {
 };
 block.onerror = () => console.error("Klotsi pilti ei saanud laadida.");
 block.src = "img/block.png";
+
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+
+  event.preventDefault();
+
+  if (event.key === "ArrowLeft") {
+    platformX -= platformSpeed;
+  } else {
+    platformX += platformSpeed;
+  }
+
+  platformX = Math.max(0, Math.min(canvas.width - platformWidth, platformX));
+  drawObjects();
+});
