@@ -14,6 +14,15 @@ background.addEventListener("error", () => {
 
 background.src = "img/background.png";
 
+// KAN-16: sound effects
+const bumpSound = new Audio("sounds/bump.mp3");
+
+function playBump() {
+  const sound = bumpSound.cloneNode();
+  sound.volume = 0.4;
+  sound.play().catch(() => {});
+}
+
 const platform = new Image();
 
 const platformWidth = 110;
@@ -193,14 +202,17 @@ function moveBall() {
   if (ballX <= 0) {
     ballX = 0;
     ballVelocityX = Math.abs(ballVelocityX);
+    playBump();
   } else if (ballX + ballSize >= canvas.width) {
     ballX = canvas.width - ballSize;
     ballVelocityX = -Math.abs(ballVelocityX);
+    playBump();
   }
 
   if (ballY <= 0) {
     ballY = 0;
     ballVelocityY = Math.abs(ballVelocityY);
+    playBump();
   }
 
   // KAN-11: brick collision
@@ -226,6 +238,7 @@ function moveBall() {
         ballY + ballSize > y
       ) {
         bricks[row][col] = false;
+        playBump();
         score += 10;
 
         // KAN-14: victory
@@ -250,6 +263,7 @@ function moveBall() {
   ) {
     ballY = platformY - ballSize;
     ballVelocityY = -Math.abs(ballVelocityY);
+    playBump();
   }
 
   drawObjects();
