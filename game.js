@@ -24,8 +24,8 @@ let platformX = (canvas.width - platformWidth) / 2;
 let ballLaunched = false;
 let ballX = platformX + platformWidth / 2 - ballSize / 2;
 let ballY = platformY - ballSize;
-const ballSpeedX = 2;
-const ballSpeedY = -4;
+let ballVelocityX = 2;
+let ballVelocityY = -4;
 
 const platformSpeed = 8;
 
@@ -127,8 +127,21 @@ document.addEventListener("keydown", (event) => {
 function moveBall() {
   if (!ballLaunched) return;
 
-  ballX += ballSpeedX;
-  ballY += ballSpeedY;
+  ballX += ballVelocityX;
+  ballY += ballVelocityY;
+
+  if (ballX <= 0) {
+    ballX = 0;
+    ballVelocityX = Math.abs(ballVelocityX);
+  } else if (ballX + ballSize >= canvas.width) {
+    ballX = canvas.width - ballSize;
+    ballVelocityX = -Math.abs(ballVelocityX);
+  }
+
+  if (ballY <= 0) {
+    ballY = 0;
+    ballVelocityY = Math.abs(ballVelocityY);
+  }
 
   drawObjects();
 
