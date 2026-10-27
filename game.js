@@ -32,12 +32,19 @@ const platformSpeed = 8;
 const ball = new Image();
 const block = new Image();
 let blockLoaded = false;
+let score = 0;
 const bricks = Array.from({ length: 3 }, () => Array(8).fill(true));
 
 let platformLoaded = false;
 let ballLoaded = false;
 
 function drawObjects() {
+  // KAN-12: score
+  context.font = "bold 24px Arial";
+  context.fillStyle = "#ffffff";
+  context.textAlign = "left";
+  context.fillText("Punktid: " + score, 20, 40);
+
   if (background.complete && background.naturalWidth) {
     context.drawImage(background, 0, 0, canvas.width, canvas.height);
   } else {
@@ -74,6 +81,11 @@ function drawObjects() {
     ballY = platformY - ballSize;
   }
   context.drawImage(ball, ballX, ballY, ballSize, ballSize);
+  context.font = "bold 24px Arial";
+  context.fillStyle = "#ffffff";
+  context.textAlign = "left";
+  context.fillText("Punktid: " + score, 20, 40);
+
 
 }
 
@@ -169,6 +181,7 @@ function moveBall() {
         ballY + ballSize > y
       ) {
         bricks[row][col] = false;
+        score += 10;
         ballVelocityY = -ballVelocityY;
         brickHit = true;
         break;
