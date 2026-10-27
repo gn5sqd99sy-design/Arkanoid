@@ -33,6 +33,7 @@ const ball = new Image();
 const block = new Image();
 let blockLoaded = false;
 let score = 0;
+let gameWon = false;
 const bricks = Array.from({ length: 3 }, () => Array(8).fill(true));
 
 let platformLoaded = false;
@@ -85,6 +86,21 @@ function drawObjects() {
   context.fillStyle = "#ffffff";
   context.textAlign = "left";
   context.fillText("Punktid: " + score, 20, 40);
+
+  if (gameWon) {
+    context.fillStyle = "rgba(0, 0, 0, 0.65)";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    context.fillStyle = "#ffffff";
+    context.textAlign = "center";
+    context.font = "bold 48px Arial";
+    context.fillText("Võitsid!", canvas.width / 2, canvas.height / 2);
+
+    context.font = "bold 26px Arial";
+    context.fillText("Punktid: " + score,
+      canvas.width / 2, canvas.height / 2 + 45);
+  }
+
 
 
 }
@@ -182,6 +198,12 @@ function moveBall() {
       ) {
         bricks[row][col] = false;
         score += 10;
+
+        // KAN-14: victory
+        if (bricks.every(row => row.every(active => !active))) {
+          gameWon = true;
+          ballLaunched = false;
+        }
         ballVelocityY = -ballVelocityY;
         brickHit = true;
         break;
@@ -213,6 +235,11 @@ function moveBall() {
     ballVelocityX = 2;
     ballVelocityY = -4;
 
+    drawObjects();
+    return;
+  }
+
+  if (gameWon) {
     drawObjects();
     return;
   }
