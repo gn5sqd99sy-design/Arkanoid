@@ -32,6 +32,7 @@ const platformSpeed = 8;
 const ball = new Image();
 const block = new Image();
 let blockLoaded = false;
+const bricks = Array.from({ length: 3 }, () => Array(8).fill(true));
 
 let platformLoaded = false;
 let ballLoaded = false;
@@ -53,10 +54,12 @@ function drawObjects() {
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < columns; col++) {
-        context.drawImage(block,
-          startX + col * (width + gap),
-          70 + row * (height + gap),
-          width, height);
+        if (bricks[row][col]) {
+          context.drawImage(block,
+            startX + col * (width + gap),
+            70 + row * (height + gap),
+            width, height);
+        }
       }
     }
   }
@@ -141,6 +144,36 @@ function moveBall() {
   if (ballY <= 0) {
     ballY = 0;
     ballVelocityY = Math.abs(ballVelocityY);
+  }
+
+  // KAN-11: brick collision
+  const brickWidth = 65;
+  const brickHeight = 25;
+  const brickGap = 8;
+  const brickStartX =
+    (canvas.width - 8 * (brickWidth + brickGap) + brickGap) / 2;
+
+  let brickHit = false;
+
+  for (let row = 0; row < 3 && !brickHit; row++) {
+    for (let col = 0; col < 8; col++) {
+      if (!bricks[row][col]) continue;
+
+      const x = brickStartX + col * (brickWidth + brickGap);
+      const y = 70 + row * (brickHeight + brickGap);
+
+      if (
+        ballX < x + brickWidth &&
+        ballX + ballSize > x &&
+        ballY < y + brickHeight &&
+        ballY + ballSize > y
+      ) {
+        bricks[row][col] = false;
+        ballVelocityY = -ballVelocityY;
+        brickHit = true;
+        break;
+      }
+    }
   }
 
   // KAN-10: platform collision
