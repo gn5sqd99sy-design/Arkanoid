@@ -143,6 +143,18 @@ function moveBall() {
     ballVelocityY = Math.abs(ballVelocityY);
   }
 
+  // KAN-10: platform collision
+  if (
+    ballVelocityY > 0 &&
+    ballY + ballSize >= platformY &&
+    ballY < platformY + platformHeight &&
+    ballX + ballSize > platformX &&
+    ballX < platformX + platformWidth
+  ) {
+    ballY = platformY - ballSize;
+    ballVelocityY = -Math.abs(ballVelocityY);
+  }
+
   drawObjects();
 
   if (ballY + ballSize < 0) {
