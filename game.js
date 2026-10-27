@@ -203,8 +203,16 @@ function moveBall() {
 
   drawObjects();
 
-  if (ballY + ballSize < 0) {
+  // KAN-13: ball lost
+  if (ballY >= canvas.height) {
     ballLaunched = false;
+
+    ballX = platformX + platformWidth / 2 - ballSize / 2;
+    ballY = platformY - ballSize;
+
+    ballVelocityX = 2;
+    ballVelocityY = -4;
+
     drawObjects();
     return;
   }
