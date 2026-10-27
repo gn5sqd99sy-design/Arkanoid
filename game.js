@@ -155,6 +155,35 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+// KAN-15: restart game
+function restartGame() {
+  if (!gameWon) return;
+
+  gameWon = false;
+  ballLaunched = false;
+  score = 0;
+
+  for (let row = 0; row < bricks.length; row++) {
+    bricks[row].fill(true);
+  }
+
+  platformX = (canvas.width - platformWidth) / 2;
+  ballX = platformX + platformWidth / 2 - ballSize / 2;
+  ballY = platformY - ballSize;
+
+  ballVelocityX = 2;
+  ballVelocityY = -4;
+
+  drawObjects();
+}
+
+document.addEventListener("keydown", (event) => {
+  if (event.code === "KeyR" && gameWon) {
+    event.preventDefault();
+    restartGame();
+  }
+});
+
 function moveBall() {
   if (!ballLaunched) return;
 
@@ -246,3 +275,15 @@ function moveBall() {
 
   requestAnimationFrame(moveBall);
 }
+
+// KAN-15: test victory
+document.addEventListener("keydown", (event) => {
+  if (event.code === "KeyV") {
+    event.preventDefault();
+    ballLaunched = false;
+    bricks.forEach(row => row.fill(false));
+    score = 240;
+    gameWon = true;
+    drawObjects();
+  }
+});
