@@ -20,12 +20,33 @@ canvas {
 	height: auto;
 	aspect-ratio: 16 / 9;
 }
+
+.game-container {
+        width: min(100vw, 640px);
+}
+.game-instructions {
+        padding: 12px 8px;
+        color: white;
+        background: #30203d;
+        font: 14px Arial, sans-serif;
+        text-align: center;
+        line-height: 1.8;
+}
 </style>
 </head>
 <body>
+<div class="game-container">
 <canvas id="mycanvas" width="640" height="360" aria-label="Arkanoidi mänguväli">
 	Sinu brauser ei toeta HTML5 canvas-elementi.
 </canvas>
+<div class="game-instructions">
+← → — Platvormi liigutamine |
+Space — Palli käivitamine
+<br>
+P — Paus / Jätka |
+R — Uus mäng pärast võitu
+</div>
+</div>
 <script src="game.js" type="text/javascript"></script>
 </body>
 </html>
