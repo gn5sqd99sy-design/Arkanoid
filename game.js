@@ -43,6 +43,7 @@ const block = new Image();
 let blockLoaded = false;
 let score = 0;
 let gameWon = false;
+let gamePaused = false;
 const bricks = Array.from({ length: 3 }, () => Array(8).fill(true));
 
 let platformLoaded = false;
@@ -86,7 +87,7 @@ function drawObjects() {
 
   context.drawImage(platform, platformX, platformY, platformWidth, platformHeight);
   
-  if (!ballLaunched) {
+  if (!ballLaunched && !gamePaused && !gameWon) {
     ballX = platformX + platformWidth / 2 - ballSize / 2;
     ballY = platformY - ballSize;
   }
@@ -95,6 +96,16 @@ function drawObjects() {
   context.fillStyle = "#ffffff";
   context.textAlign = "left";
   context.fillText("Punktid: " + score, 20, 40);
+
+  // KAN-17: pause display
+  if (gamePaused) {
+    context.fillStyle = "rgba(0, 0, 0, 0.65)";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#ffffff";
+    context.textAlign = "center";
+    context.font = "bold 48px Arial";
+    context.fillText("Paus", canvas.width / 2, canvas.height / 2);
+  }
 
   if (gameWon) {
     context.fillStyle = "rgba(0, 0, 0, 0.65)";
@@ -140,6 +151,7 @@ block.src = "img/block.png";
 
 document.addEventListener("keydown", (event) => {
   if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+  if (gamePaused) return;
 
   event.preventDefault();
 
@@ -194,7 +206,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 function moveBall() {
-  if (!ballLaunched) return;
+  if (!ballLaunched || gamePaused) return;
 
   ballX += ballVelocityX;
   ballY += ballVelocityY;
@@ -299,5 +311,18 @@ document.addEventListener("keydown", (event) => {
     score = 240;
     gameWon = true;
     drawObjects();
+  }
+});
+
+// KAN-17: pause
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "KeyP" || gameWon || event.repeat) return;
+
+  event.preventDefault();
+  gamePaused = !gamePaused;
+  drawObjects();
+
+  if (!gamePaused && ballLaunched) {
+    requestAnimationFrame(moveBall);
   }
 });
